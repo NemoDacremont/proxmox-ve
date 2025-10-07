@@ -12,13 +12,16 @@ After the example vagrant environment is started, you can access the [Proxmox We
 
 For a cluster example see [rgl/proxmox-ve-cluster-vagrant](https://github.com/rgl/proxmox-ve-cluster-vagrant).
 
-## libvirt/VirtualBox
+## VirtualBox
 
 Create the base box:
 
 ```bash
-make build-libvirt # or build-virtualbox
+make build-virtualbox
 ```
+
+> [!NOTE]
+> Currently, the credentials generated are `root:vagrantt`, I should patch it soon. `vagrant ssh` should still work since it uses ssh keys.
 
 Add the base box as suggested in make output:
 
@@ -29,146 +32,20 @@ vagrant box add -f proxmox-ve-amd64 proxmox-ve-amd64-libvirt.box # or proxmox-ve
 Start the example vagrant environment with:
 
 ```bash
-cd example
-vagrant up --no-destroy-on-error --provider=libvirt # or --provider=virtualbox
+mkdir my-example; cd my-example
+vagrant init proxmox-ve-amd64 --provider=virtualbox
+vagrant up --no-destroy-on-error --provider=virtualbox
 ```
 
-## Proxmox
-
-Set the Proxmox VE details:
-
-```bash
-cat >secrets-proxmox.sh <<EOF
-export PROXMOX_URL='https://192.168.1.21:8006/api2/json'
-export PROXMOX_USERNAME='root@pam'
-export PROXMOX_PASSWORD='vagrant'
-export PROXMOX_NODE='pve'
-EOF
-source secrets-proxmox.sh
-```
-
-Create the template:
-
-```bash
-make build-proxmox
-```
-
-**NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer or terraform.
-
-## Hyper-V
-
-Follow the [rgl/debian-vagrant Hyper-V Usage section](https://github.com/rgl/debian-vagrant#hyper-v-usage).
-
-Create a vSwitch for proxmox:
-
-```bash
-PowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass <<'EOF'
-$switchName = 'proxmox'
-$networkAdapterName = "vEthernet ($switchName)"
-$networkAdapterIpAddress = '10.10.10.1'
-$networkAdapterIpPrefixLength = 24
-
-# create the vSwitch.
-New-VMSwitch -Name $switchName -SwitchType Internal | Out-Null
-
-# assign it an host IP address.
-$networkAdapter = Get-NetAdapter $networkAdapterName
-$networkAdapter | New-NetIPAddress `
-    -IPAddress $networkAdapterIpAddress `
-    -PrefixLength $networkAdapterIpPrefixLength `
-    | Out-Null
-
-# remove all virtual switches from the windows firewall.
-Set-NetFirewallProfile `
-    -DisabledInterfaceAliases (
-            Get-NetAdapter -name "vEthernet*" | Where-Object {$_.ifIndex}
-        ).InterfaceAlias
-EOF
-```
-
-Create the base box:
-
-```bash
-make build-hyperv
-```
-
-Add the base box as suggested in make output:
-
-```bash
-vagrant box add -f proxmox-ve-amd64 proxmox-ve-amd64-hyperv.box
-```
-
-Start the example vagrant environment with:
-
-```bash
-cd example
-vagrant up --provider=hyperv
-```
-
-## VMware vSphere usage
-
-Download [govc](https://github.com/vmware/govmomi/releases/latest) and place it inside your `/usr/local/bin` directory.
-
-Set your VMware vSphere details and test the connection:
-
-```bash
-sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
-vagrant plugin install vagrant-vsphere
-cat >secrets-vsphere.sh <<'EOF'
-export GOVC_INSECURE='1'
-export GOVC_HOST='vsphere.local'
-export GOVC_URL="https://$GOVC_HOST/sdk"
-export GOVC_USERNAME='administrator@vsphere.local'
-export GOVC_PASSWORD='password'
-export GOVC_DATACENTER='Datacenter'
-export GOVC_CLUSTER='Cluster'
-export GOVC_DATASTORE='Datastore'
-export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/proxmox-ve_8.1-2.iso"
-export VSPHERE_ESXI_HOST='esxi.local'
-export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/proxmox-ve-amd64-vsphere"
-export VSPHERE_VM_FOLDER='test'
-export VSPHERE_VM_NAME='proxmox-ve-example'
-# NB for the nested VMs to access the network, this VLAN port group security
-#    policy MUST be configured to Accept:
-#      Promiscuous mode
-#      Forged transmits
-export VSPHERE_VLAN='packer'
-export VSPHERE_IP_WAIT_ADDRESS='0.0.0.0/0'
-# set the credentials that the guest will use
-# to connect to this host smb share.
-# NB you should create a new local user named _vagrant_share
-#    and use that one here instead of your user credentials.
-# NB it would be nice for this user to have its credentials
-#    automatically rotated, if you implement that feature,
-#    let me known!
-export VAGRANT_SMB_USERNAME='_vagrant_share'
-export VAGRANT_SMB_PASSWORD=''
-EOF
-source secrets-vsphere.sh
-# see https://github.com/vmware/govmomi/blob/master/govc/USAGE.md
-govc version
-govc about
-govc datacenter.info # list datacenters
-govc find # find all managed objects
-```
-
-Download the Proxmox ISO (you can find the full iso URL in the [proxmox-ve.json](proxmox-ve.json) file) and place it inside the datastore as defined by the `iso_paths` property that is inside the [packer template](proxmox-ve-vsphere.json) file.
-
-See the [example Vagrantfile](example/Vagrantfile) to see how you could use a cloud-init configuration to configure the VM.
-
-Type `make build-vsphere` and follow the instructions.
-
-Try the example guest:
-
-```bash
-source secrets-vsphere.sh
-cd example
-vagrant up --provider=vsphere --no-destroy-on-error --no-tty
-vagrant ssh
-exit
-vagrant destroy -f
-```
+> [!NOTE]
+> You can add the following lines to the generated vagrant file to access the web ui through `https://localhost:8006`
+> ```
+>   # forward proxmox API port
+>   config.vm.network "forwarded_port",
+>     guest: 8006,
+>     host_ip: "127.0.0.1",
+>     host: 8006
+> ```
 
 ## Packer build performance options
 
