@@ -38,6 +38,17 @@ chmod 600 authorized_keys
 chown -R vagrant:vagrant .
 popd
 
+# Update vagrant and root password (root password was set to vagrantt to pass the 8-chars requirements during proxmox install)
+passwd root << EOF
+vagrant
+vagrant
+EOF
+
+passwd vagrant << EOF
+vagrant
+vagrant
+EOF
+
 # install the VirtualBox Guest Additions.
 # this will be installed at /opt/VBoxGuestAdditions-VERSION.
 # NB You can unpack the VBoxLinuxAdditions.run file contents with:

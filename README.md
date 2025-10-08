@@ -21,7 +21,7 @@ make build-virtualbox
 ```
 
 > [!NOTE]
-> Currently, the credentials generated are `root:vagrantt`, I should patch it soon. `vagrant ssh` should still work since it uses ssh keys.
+> Currently, the credentials generated are `root:vagrant` and `vagrant:vagrant`
 
 Add the base box as suggested in make output:
 
