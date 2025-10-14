@@ -38,12 +38,14 @@ chmod 600 authorized_keys
 chown -R vagrant:vagrant .
 popd
 
-# Update vagrant and root password (root password was set to vagrantt to pass the 8-chars requirements during proxmox install)
+# Update root password (root password was set to vagrantt to pass the 8-chars requirements during proxmox install)
+# root password is set to root by default to have the same as https://github.com/Telmate/proxmox-api-go tests
 passwd root << EOF
-vagrant
-vagrant
+root
+root
 EOF
 
+# Update vagrant password
 passwd vagrant << EOF
 vagrant
 vagrant
