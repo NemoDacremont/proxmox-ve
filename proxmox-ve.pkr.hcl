@@ -29,7 +29,7 @@ variable "memory" {
 
 variable "disk_size" {
   type    = number
-  default = 20 * 1024
+  default = 40 * 1024
 }
 
 variable "iso_url" {
@@ -60,31 +60,6 @@ variable "apt_cache_port" {
 variable "output_base_dir" {
   type    = string
   default = env("PACKER_OUTPUT_BASE_DIR")
-}
-
-variable "step_country" {
-  type    = string
-  default = "United S<wait>t<wait>a<wait>t<wait>e<wait>s<wait><enter><wait>"
-}
-
-variable "step_email" {
-  type    = string
-  default = "pve@example.com"
-}
-
-variable "step_hostname" {
-  type    = string
-  default = "pve.example.com"
-}
-
-variable "step_keyboard_layout" {
-  type    = string
-  default = ""
-}
-
-variable "step_timezone" {
-  type    = string
-  default = ""
 }
 
 variable "shell_provisioner_scripts" {
@@ -119,6 +94,9 @@ source "virtualbox-iso" "proxmox-ve-amd64" {
   vboxmanage_post = [
     ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"],
   ]
+  cd_label            = "proxmox-ais"
+  cd_files            = ["answer.toml"]
+
   disk_size            = var.disk_size
   hard_drive_interface = "sata"
   hard_drive_discard   = true
@@ -126,32 +104,19 @@ source "virtualbox-iso" "proxmox-ve-amd64" {
   iso_checksum         = var.iso_checksum
   output_directory     = "${var.output_base_dir}/output-{{build_name}}"
   ssh_username         = "root"
-  ssh_password         = "vagrantt"
-  ssh_timeout          = "5m"
+  ssh_password         = "password"
+  ssh_timeout          = "20m"
   boot_wait            = "5s"
+
   boot_command = [
-    "<enter>",
+    # select Advanced Options.
+    "<end><enter>",
+    # select Install Proxmox VE (Automated).
+    "<down><down><down><enter>",
+    # wait for the shell prompt.
     "<wait1m>",
-    "<enter><wait>",
-    "<enter><wait>",
-    "${var.step_country}<tab><wait>",
-    "${var.step_timezone}<tab><wait>",
-    "${var.step_keyboard_layout}<tab><wait>",
-    "<tab><wait>",
-    "<enter><wait5>",
-    "vagrantt<tab><wait>",
-    "vagrantt<tab><wait>",
-    "${var.step_email}<tab><wait>",
-    "<tab><wait>",
-    "<enter><wait5>",
-    "${var.step_hostname}<tab><wait>",
-    "<tab><wait>",
-    "<tab><wait>",
-    "<tab><wait>",
-    "<tab><wait>",
-    "<tab><wait>",
-    "<enter><wait5>",
-    "<enter><wait5>",
+    # do the installation.
+    "proxmox-fetch-answer partition proxmox-ais >/run/automatic-installer-answers<enter><wait>exit<enter>",
   ]
   shutdown_command = "poweroff"
 }
