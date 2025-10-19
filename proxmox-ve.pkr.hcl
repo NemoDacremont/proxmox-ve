@@ -13,6 +13,11 @@ packer {
   }
 }
 
+variable "proxmox_version" {
+  type    = number
+  default = 9
+}
+
 variable "vagrant_box" {
   type = string
 }
@@ -30,16 +35,6 @@ variable "memory" {
 variable "disk_size" {
   type    = number
   default = 40 * 1024
-}
-
-variable "iso_url" {
-  type    = string
-  default = "http://download.proxmox.com/iso/proxmox-ve_8.4-1.iso"
-}
-
-variable "iso_checksum" {
-  type    = string
-  default = "sha256:d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
 }
 
 variable "proxmox_node" {
@@ -60,6 +55,23 @@ variable "apt_cache_port" {
 variable "output_base_dir" {
   type    = string
   default = env("PACKER_OUTPUT_BASE_DIR")
+}
+
+locals {
+  iso_url_map = {
+    "6" = "http://download.proxmox.com/iso/proxmox-ve_6.4-1.iso"
+    "7" = "http://download.proxmox.com/iso/proxmox-ve_7.4-1.iso"
+    "8" = "http://download.proxmox.com/iso/proxmox-ve_8.4-1.iso"
+    "9" = "http://download.proxmox.com/iso/proxmox-ve_9.0-1.iso"
+  }
+  iso_checksum_map = {
+    "6" = "sha256:ab71b03057fdeea29804f96f0ff4483203b8c7a25957a4f69ed0002b5f34e607"
+    "7" = "sha256:55b672c4b0d2bdcbff9910eea43df3b269aaab3f23e7a1df18b82d92eb995916"
+    "8" = "sha256:d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
+    "9" = "sha256:228f948ae696f2448460443f4b619157cab78ee69802acc0d06761ebd4f51c3e"
+  }
+  iso_url      = local.iso_url_map[var.proxmox_version]
+  iso_checksum = local.iso_checksum_map[var.proxmox_version]
 }
 
 variable "shell_provisioner_scripts" {
@@ -100,8 +112,8 @@ source "virtualbox-iso" "proxmox-ve-amd64" {
   disk_size            = var.disk_size
   hard_drive_interface = "sata"
   hard_drive_discard   = true
-  iso_url              = var.iso_url
-  iso_checksum         = var.iso_checksum
+  iso_url              = local.iso_url
+  iso_checksum         = local.iso_checksum
   output_directory     = "${var.output_base_dir}/output-{{build_name}}"
   ssh_username         = "root"
   ssh_password         = "password"
