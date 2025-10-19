@@ -1,6 +1,6 @@
-This builds an up-to-date [Proxmox VE](https://www.proxmox.com/en/proxmox-ve) Vagrant Base Box.
+This builds an up-to-date [Proxmox VE](https://www.proxmox.com/en/proxmox-ve) Vagrant Base Box for virtualbox.
 
-Currently this targets Proxmox VE 8.
+Currently this targets Proxmox VE 8 and Proxmox VE 9.
 
 # Usage
 
@@ -8,7 +8,7 @@ Create the base box as described in the section corresponding to your provider.
 
 If you want to troubleshoot the packer execution see the `.log` file that is created in the current directory.
 
-After the example vagrant environment is started, you can access the [Proxmox Web Interface](https://10.10.10.2:8006/) with the default `root` user and password `vagrant`.
+After the example vagrant environment is started, you can access the [Proxmox Web Interface](https://127.0.0.1:8006/) with the default `root` user and password `root`.
 
 For a cluster example see [rgl/proxmox-ve-cluster-vagrant](https://github.com/rgl/proxmox-ve-cluster-vagrant).
 
@@ -20,23 +20,24 @@ For a cluster example see [rgl/proxmox-ve-cluster-vagrant](https://github.com/rg
 Create the base box:
 
 ```bash
-make build-virtualbox
+make build-v9
+# make build-v8  # if you want to build a proxmox-ve v8 image
 ```
 
 > [!NOTE]
-> Currently, the credentials generated are `root:vagrant` and `vagrant:vagrant`
+> Currently, the credentials generated are `root:root` and `vagrant:vagrant`
 
-Add the base box as suggested in make output:
+Add the base box as suggested in make output (example with v9) :
 
 ```bash
-vagrant box add -f proxmox-ve-amd64 proxmox-ve-amd64-libvirt.box # or proxmox-ve-amd64-virtualbox.box
+vagrant box add -f proxmox-ve-v9-amd64 proxmox-v9/proxmox-ve-amd64-virtualbox.box.json
 ```
 
 Start the example vagrant environment with:
 
 ```bash
 mkdir my-example; cd my-example
-vagrant init proxmox-ve-amd64 --provider=virtualbox
+vagrant init proxmox-ve-v9-amd64 --provider=virtualbox
 vagrant up --no-destroy-on-error --provider=virtualbox
 ```
 
@@ -64,7 +65,7 @@ and `APT_CACHE_PORT` (default: 3124).
 Example:
 
 ```bash
-APT_CACHE_HOST=10.10.10.100 make build-libvirt
+APT_CACHE_HOST=10.10.10.100 make build-v9
 ```
 
 ### Decrease disk wear by using temporary memory file-system
@@ -91,7 +92,7 @@ tied to a specific Proxmox VE version. Also take care when you decide to overrid
 Create the base box:
 
 ```bash
-make build-libvirt VAR_FILE=example.pkrvars.hcl  # or build-virtualbox or build-hyperv
+make build-v9 VAR_FILE=example.pkrvars.hcl
 ```
 
 The following content of `example.pkrvars.hcl`:
@@ -155,4 +156,5 @@ corresponding answers.
 | advance to the next page          | `<enter><wait5>`                                      |
 | install                           | `<enter><wait5>`                                      |
 
-**NB** Do not change the keyboard layout. If you do, the email address will fail to be typed.
+> [!WARNING]
+> Do not change the keyboard layout. If you do, the email address will fail to be typed.
