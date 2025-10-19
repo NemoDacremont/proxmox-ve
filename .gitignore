@@ -7,3 +7,4 @@ tmp/
 *.box.json
 *.log
 secrets*
+/proxmox-v[0-9]

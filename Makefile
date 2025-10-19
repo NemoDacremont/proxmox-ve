@@ -34,6 +34,6 @@ proxmox-v%/proxmox-ve-amd64-virtualbox.box: provisioners/*.sh proxmox-ve.pkr.hcl
 
 PHONY += clean
 clean:
-	rm -rf packer_cache $${PACKER_OUTPUT_BASE_DIR:-.}/output-proxmox-ve*
+	rm -rf packer_cache proxmox-v[89]
 
 .PHONY: $(PHONY)
