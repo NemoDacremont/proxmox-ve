@@ -8,15 +8,14 @@ PACKER_FLAGS := -on-error=abort -timestamp-ui -var-file=variables.pkrvars.hcl
 
 PHONY += help
 help:
-	@echo type make build, make build-v6, make build-v7, make build-v8 or make build-v9
+	@echo type make build, make build-v8 or make build-v9
+	@echo make build will build a proxmox v9 image
 
 PHONY += build-virtualbox
 build: proxmox-v9/proxmox-ve-amd64-virtualbox.box
 
 build-v9: proxmox-v9/proxmox-ve-amd64-virtualbox.box
 build-v8: proxmox-v8/proxmox-ve-amd64-virtualbox.box
-build-v7: proxmox-v7/proxmox-ve-amd64-virtualbox.box
-build-v6: proxmox-v6/proxmox-ve-amd64-virtualbox.box
 
 
 proxmox-v%/proxmox-ve-amd64-virtualbox.box: provisioners/*.sh proxmox-ve.pkr.hcl Vagrantfile.template $(VAR_FILE)

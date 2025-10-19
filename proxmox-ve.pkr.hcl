@@ -59,14 +59,10 @@ variable "output_base_dir" {
 
 locals {
   iso_url_map = {
-    "6" = "http://download.proxmox.com/iso/proxmox-ve_6.4-1.iso"
-    "7" = "http://download.proxmox.com/iso/proxmox-ve_7.4-1.iso"
     "8" = "http://download.proxmox.com/iso/proxmox-ve_8.4-1.iso"
     "9" = "http://download.proxmox.com/iso/proxmox-ve_9.0-1.iso"
   }
   iso_checksum_map = {
-    "6" = "sha256:ab71b03057fdeea29804f96f0ff4483203b8c7a25957a4f69ed0002b5f34e607"
-    "7" = "sha256:55b672c4b0d2bdcbff9910eea43df3b269aaab3f23e7a1df18b82d92eb995916"
     "8" = "sha256:d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
     "9" = "sha256:228f948ae696f2448460443f4b619157cab78ee69802acc0d06761ebd4f51c3e"
   }
