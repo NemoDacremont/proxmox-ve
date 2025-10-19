@@ -31,5 +31,5 @@ cat <<EOF
 
 Add the Vagrant Box with:
 
-vagrant box add -f $name $path.json
+vagrant box add -f $name ./$path.json
 EOF
