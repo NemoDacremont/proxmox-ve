@@ -4,20 +4,20 @@ Currently this targets Proxmox VE 8 and Proxmox VE 9.
 
 # Usage
 
-Create the base box as described in the section corresponding to your provider.
+Create the base box for virtualbox as described below. If you want to troubleshoot the packer execution see the `.log` file that is created in the building directory.
 
-If you want to troubleshoot the packer execution see the `.log` file that is created in the current directory.
-
-After the example vagrant environment is started, you can access the [Proxmox Web Interface](https://127.0.0.1:8006/) with the default `root` user and password `root`.
+After the example vagrant environment is started, you can access the [Proxmox Web Interface](https://127.0.0.1:8006/) with the default credentials `root:root`.
 
 For a cluster example see [rgl/proxmox-ve-cluster-vagrant](https://github.com/rgl/proxmox-ve-cluster-vagrant).
 
 > [!NOTE]
 > A precompiled image can be download at https://git.dacremont.xyz/ndacremont/-/packages/vagrant/proxmox-ve/1.0.0
 
-## VirtualBox
+## Building
 
-Create the base box:
+In order to build the base image, you will need `vagrant` and `packer`, with a few other dependencies.
+
+### Create the base box:
 
 ```bash
 make build-v9
