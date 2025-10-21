@@ -14,10 +14,11 @@ help:
 PHONY += build
 build: proxmox-v9/proxmox-ve-amd64-virtualbox.box
 
+PHONY += build-v8 build-v9
 build-v9: proxmox-v9/proxmox-ve-amd64-virtualbox.box
 build-v8: proxmox-v8/proxmox-ve-amd64-virtualbox.box
 
-
+PHONY += proxmox-v8/proxmox-ve-amd64-virtualbox.box proxmox-v9/proxmox-ve-amd64-virtualbox.box
 proxmox-v%/proxmox-ve-amd64-virtualbox.box: provisioners/*.sh proxmox-ve.pkr.hcl Vagrantfile.template $(VAR_FILE)
 	mkdir -p proxmox-v$*.old
 	mv proxmox-v$*/* proxmox-v$*.old || true  # Backup previous build in case of build failure
