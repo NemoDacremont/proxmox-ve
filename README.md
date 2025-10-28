@@ -11,7 +11,7 @@ After the example vagrant environment is started, you can access the [Proxmox We
 For a cluster example see [rgl/proxmox-ve-cluster-vagrant](https://github.com/rgl/proxmox-ve-cluster-vagrant).
 
 > [!NOTE]
-> A precompiled image can be download at https://git.dacremont.xyz/ndacremont/-/packages/vagrant/proxmox-ve/1.0.0
+> Precompiled images can be downloaded at https://git.dacremont.xyz/ndacremont/-/packages/vagrant/proxmox-ve-v9-amd/0.0.0 and https://git.dacremont.xyz/ndacremont/-/packages/vagrant/proxmox-ve-v8-amd/0.0.0
 
 ## Building
 
